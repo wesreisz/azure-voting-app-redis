@@ -19,7 +19,7 @@ spec:
         image: redis
         ports:
         - containerPort: 6379
-          name: redis
+          name: redis  
 ---
 apiVersion: v1
 kind: Service
@@ -65,8 +65,10 @@ spec:
         env:
         - name: REDIS
           value: "azure-vote-back"
-    imagePullSecrets:
-      - name: acr-secret
+        - name: TITLE
+          value: TKG Voting App  
+      imagePullSecrets:
+        - name: acr-secret  
 ---
 apiVersion: v1
 kind: Service
