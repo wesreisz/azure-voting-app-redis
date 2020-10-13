@@ -4,8 +4,12 @@ import random
 import redis
 import socket
 import sys
+import simplejson as json
 
 app = Flask(__name__)
+
+# Get port from environment variable or choose 9099 as local default
+port = int(os.getenv("PORT", 9099))
 
 # Load configurations from environment or config file
 app.config.from_pyfile('config_file.cfg')
@@ -26,7 +30,9 @@ else:
     title = app.config['TITLE']
 
 # Redis configurations
-redis_server = os.environ['REDIS']
+if 'VCAP_SERVICES' in os.environ:
+    services = json.loads(os.getenv('VCAP_SERVICES'))
+    redis_server = services['p-redis'][0]['credentials']
 
 # Redis Connection
 try:
@@ -35,7 +41,7 @@ try:
                         port=6379,
                         password=os.environ['REDIS_PWD'])
     else:
-        r = redis.Redis(redis_server)
+        r = redis.Redis(**redis_server)
     r.ping()
 except redis.ConnectionError:
     exit('Failed to connect to Redis, terminating.')
@@ -85,4 +91,5 @@ def index():
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
 if __name__ == "__main__":
-    app.run()
+    # Run the app, listening on all IPs with our chosen port number
+    app.run(host='0.0.0.0', port=port)
