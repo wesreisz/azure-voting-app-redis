@@ -2,10 +2,10 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: hello-kubernetes
+  name: azure-vote-ingress
   labels:
-    app: hello-kubernetes
+    app: azure-vote-front
 spec:
   backend:
-    serviceName: hello-kubernetes
+    serviceName: azure-vote-front
     servicePort: 80
